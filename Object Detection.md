@@ -15,7 +15,7 @@ RCNN（Region with CNN feature），算法可以分为三步：（1）候选区�
 （2）**CNN特征提取**：标准卷积神经网络根据输入执行诸如卷积或池化的操作以获得固定维度输出。
 
 （3）**分类与边界回归**：分为两个子步骤，一个是对前一步的输出向量进行分类; 二是通过边界回归框回归（缩写为bbox）获得精确的区域信息。在分类器的选择中有支持向量机SVM，Softmax等等；边界回归有bbox回归，多任务损失函数边框回归等 。
-![img](E:\Markdown\CV_Learning\Object Detection.assets\rcnn.png)
+![img](.\Object Detection.assets\rcnn.png)
 
 <center><font size=2>图0 RCNN</font></center>
 
@@ -35,7 +35,7 @@ RCNN（Region with CNN feature），算法可以分为三步：（1）候选区�
 2. 使用卷积网络提取图片特征。
 3. 在第二步进行的卷积操作过后可以得到feature map，根据之前RoI框选择出对应的区域（既可以理解为将feature map映射回原图像）， 在最后一次卷积之前，使用 RoI池层来统一相同的比例（这里利用的是单层SPP-Net）。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\fast_rcnn.png)
+![img](.\Object Detection.assets\fast_rcnn.png)
 
 <center><font size=2>图1 Fast RCNN</font></center>
 
@@ -75,7 +75,7 @@ R-CNN有一些相当大的缺点，把这些缺点都改掉了，就成了Fast R
 3. Roi Pooling。该层收集输入的feature maps和proposals，综合这些信息后提取proposal feature maps，送入后续全连接层判定目标类别。
 4. Classification。利用proposal feature maps计算proposal的类别，同时再次bounding box regression获得检测框最终的精确位置。
 
-![Faster RCNN VGG Net](E:\Markdown\CV_Learning\Object Detection.assets\faster_rcnn_1.jpg) 
+![Faster RCNN VGG Net](.\Object Detection.assets\faster_rcnn_1.jpg) 
 
 <center><font size=2>图2 Faster RCNN VGG16</font></center>
 
@@ -90,7 +90,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 为何重要？在Faster RCNN Conv layers中对所有的卷积都做了扩边处理（pad=1，即填充一圈0），导致原图变为(M+2)x(N+2)大小，再做3x3卷积后输出MxN。正是这种设置，导致Conv layers中的conv层不改变输入和输出矩阵大小。如图3：
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170315105541757)
+![img](.\Object Detection.assets\20170315105541757)
 
 <center><font size=2>图3 conv layers</font></center>
 
@@ -116,7 +116,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 经典的检测方法生成检测框都非常耗时，如OpenCV adaboost使用滑动窗口+图像金字塔生成检测框；或如RCNN使用SS(Selective Search)方法生成检测框。而Faster RCNN则抛弃了传统的滑动窗口和SS方法，直接使用RPN生成检测框，这也是Faster RCNN的巨大优势，能极大提升检测框的生成速度。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170328113414055)
+![img](.\Object Detection.assets\20170328113414055)
 
 <center><font size=2>图5 RPN网络结构</font></center>
 
@@ -128,7 +128,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 对于多通道图像+多卷积核做卷积，计算方式如下：
 
-![mg](E:\Markdown\CV_Learning\Object Detection.assets\20170318112222765-1574996110979)
+![mg](.\Object Detection.assets\20170318112222765-1574996110979)
 
 <center><font size=2>图5 多通道+多卷积核做卷积示意图</font></center>
 
@@ -154,7 +154,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 其中每行的4个值[x1,y1,x2,y2]代表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为：width:height = [1:1, 1:2, 2:1]三种，如图6。实际上通过anchors就引入了检测中常用到的多尺度方法。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170322103823615)
+![img](.\Object Detection.assets\20170322103823615)
 
 <center><font size=2>图6 anchors示意图</font></center>
 
@@ -164,7 +164,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 <font color=red>这样做获得检测框很不准确，不用担心，后面还有2次bounding box regression可以修正检测框位置。</font>
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170322103903632)
+![img](.\Object Detection.assets\20170322103903632)
 
 <center><font size=2>图7 生成初始检测框</font></center>
 
@@ -179,7 +179,7 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 
 一副MxN大小的矩阵送入Faster RCNN网络后，到RPN网络变为(M/16)x(N/16)，不妨设W=M/16，H=N/16。在进入reshape与softmax之前，先做了1x1卷积，如图8：
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170319220636315)
+![img](.\Object Detection.assets\20170319220636315)
 
 <center><font size=2>图8 RPN中判定fg/bg网络结构</font></center>
 
@@ -219,13 +219,13 @@ layer {
 
 介绍bounding box regression数学模型及原理。如图9所示绿色框为飞机的Ground Truth(GT)，红色为提取的foreground anchors，那么即便红色的框被分类器识别为飞机，但是由于红色的框定位不准，这张图相当于没有正确的检测出飞机。所以我们希望采用一种方法对红色的框进行微调，使得foreground anchors和GT更加接近。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170321000420426)
+![img](.\Object Detection.assets\20170321000420426)
 
 <center><font size=2>图9</font></center>
 
 对于窗口一般使用四维向量(x, y, w, h)表示，分别表示窗口的中心点坐标和宽高。对于图 10，<font color=red>红色的框A代表原始的Foreground Anchors</font>，<font color=green>绿色的框G代表目标的GT</font>，我们的目标是寻找一种关系，使得输入原始的anchor A经过映射得到一个跟真实窗口G更接近的回归窗口G'，即：给定anchor A=(Ax, Ay, Aw, Ah)，GT=[Gx, Gy, Gw, Gh]，寻找一种变换**F**：使得**F**(Ax, Ay, Aw, Ah)=(G'x, G'y, G'w, G'h)，其中(G'x, G'y, G'w, G'h)≈(Gx, Gy, Gw, Gh)。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170321221228658)
+![img](.\Object Detection.assets\20170321221228658)
 
 <center><font size=2>图10</font></center>
 
@@ -275,7 +275,7 @@ $$
 
 
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170321151019146)
+![img](.\Object Detection.assets\20170321151019146)
 
 <center><font size=2>图11 RPN中的bbox reg</font></center>
 
@@ -320,7 +320,7 @@ Proposal Layer有3个输入：fg/bg anchors分类器结果rpn_cls_prob_reshape�
 
 首先解释im_info。对于一副任意大小PxQ图像，传入Faster RCNN前首先reshape到固定MxN，im_info=[M, N, scale_factor]则保存了此次缩放的所有信息。然后经过Conv Layers，经过4次pooling变为WxH=(M/16)x(N/16)大小，其中feature_stride=16则保存了该信息，用于计算anchor偏移量。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170323200941596)
+![img](.\Object Detection.assets\20170323200941596)
 
 <center><font size=2>图12</font></center>
 
@@ -354,7 +354,7 @@ RoI Pooling层则负责收集proposal，并计算出proposal feature maps，送�
 1. 从图像中crop一部分传入网络
 2. 将图像warp成需要的大小后传入网络
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170324215916821)
+![img](.\Object Detection.assets\20170324215916821)
 
 <center><font size=2>图13 crop与warp破坏图像原有结构信息</font></center>
 
@@ -383,7 +383,7 @@ layer {
 
 缩进RoI Pooling layer forward过程：在之前有明确提到：$proposal=[x_1, y_1, x_2, y_2]$是对应MxN尺度的，所以首先使用spatial_scale参数将其映射回(M/16)x(N/16)大小的feature maps尺度（这里来回多次映射，是有点绕）；之后将每个proposal水平和竖直都分为7份，对每一份都进行max pooling处理。这样处理后，即使大小不同的proposal，输出结果都是7x7大小，实现了fixed-length output（固定长度输出）。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170325011547508)
+![img](.\Object Detection.assets\20170325011547508)
 
 
 
@@ -393,7 +393,7 @@ layer {
 
 缩进Classification部分利用已经获得的proposal feature maps，通过full connect层与softmax计算每个proposal具体属于那个类别（如人，车，电视等），输出cls_prob概率向量；同时再次利用bounding box regression获得每个proposal的位置偏移量bbox_pred，用于回归更加精确的目标检测框。Classification部分网络结构如图15。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170318151746365)
+![img](.\Object Detection.assets\20170318151746365)
 
 <center><font size=2>图15 Classification部分网络结构图</font></center>
 
@@ -406,7 +406,7 @@ layer {
 
 这里来看看全连接层InnerProduct layers，简单的示意图如图16，
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20170325120647787)
+![img](.\Object Detection.assets\20170325120647787)
 
 <center><font size=2>图16 全连接层示意图</font></center>
 
@@ -431,7 +431,7 @@ $$
 
 将一幅图像分成 SxS 个网格（grid cell），如果某个 object 的中心落在这个网格中，则这个网格就负责预测这个 object。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164153997)
+![img](.\Object Detection.assets\20180606164153997)
 
 每个网格要预测 B 个 bounding box，每个 bounding box 除了要回归自身的位置之外，还要附带预测一个 confidence 值。 这个 confidence 代表了所预测的 box 中含有 object 的置信度和这个 box 预测的有多准这两重信息，其值是这样计算的：  
 $$
@@ -447,7 +447,7 @@ $$
 
 整个网络结构如下图所示： 
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164310266)
+![img](.\Object Detection.assets\20180606164310266)
 
 在 test 的时候，每个网格预测的 class 信息和 bounding box 预测的 confidence信息相乘，就得到每个 bounding box 的 class-specific confidence score:
 $$
@@ -484,13 +484,13 @@ $$
 - 对不同大小的 box 预测中，相比于大 box 预测偏一点，小 box 预测偏一点肯定更不能被忍受的。而 sum-square error loss 中对同样的偏移 loss 是一样。
 - 为了缓和这个问题，作者用了一个比较取巧的办法，就是将 box 的 width 和 height 取平方根代替原本的 height 和 width。这个参考下面的图很容易理解，小box 的横轴值较小，发生偏移时，反应到y轴上相比大 box 要大。（也是个近似逼近方式）
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164449500)
+![img](.\Object Detection.assets\20180606164449500)
 
 一个网格预测多个 box，希望的是每个 box predictor 专门负责预测某个 object。具体做法就是看当前预测的 box 与 ground truth box 中哪个 IoU 大，就负责哪个。这种做法称作 box predictor 的 specialization。
 
 最后整个的损失函数如下所示： 
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164516310)
+![img](.\Object Detection.assets\20180606164516310)
 
 这个损失函数中： 
 
@@ -520,7 +520,7 @@ YOLO 对相互靠的很近的物体，还有很小的群体检测效果不好，
 YOLO 一代有很多缺点，作者希望改进的方向是改善 recall，提升定位的准确度，同时保持分类的准确度。 
 目前计算机视觉的趋势是更大更深的网络，更好的性能表现通常依赖于训练更大的网络或者把多种模型综合到一起。但是 YOLO v2 则着力于简化网络。具体的改进见下表：
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164647530)
+![img](.\Object Detection.assets\20180606164647530)
 
 **Batch Normalization**
 
@@ -546,7 +546,7 @@ YOLO 一代包含有全连接层，从而能直接预测 Bounding Boxes 的坐�
 $$
 d(box,centroid)=1-IOU(box,centroid)
 $$
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164859520)
+![img](.\Object Detection.assets\20180606164859520)
 
 通过分析实验结果（Figure 2），左图：在模型复杂性与 high recall 之间权衡之后，选择聚类分类数 K=5。右图：是聚类的中心，大多数是高瘦的 Box。
 
@@ -556,7 +556,7 @@ Table1 是说明用 K-means 选择 Anchor Boxes 时，当 Cluster IOU 选择值�
 
 用 Anchor Box 的方法，会让 model 变得不稳定，尤其是在最开始的几次迭代的时候。大多数不稳定因素产生自预测 Box 的（x,y）位置的时候。按照之前 YOLO的方法，网络不会预测偏移量，而是根据 YOLO 中的网格单元的位置来预测坐标，这就让 Ground Truth 的值介于 0 到 1 之间。而为了让网络的结果能落在这一范围内，网络使用一个 Logistic Activation 来对于网络预测结果进行限制，让结果介于 0 到 1 之间。 网络在每一个网格单元中预测出 5 个 Bounding Boxes，每个 Bounding Boxes 有五个坐标值 tx，ty，tw，th，t0，他们的关系见下图（Figure3）。假设一个网格单元对于图片左上角的偏移量是 cx、cy，Bounding Boxes Prior 的宽度和高度是 pw、ph，那么预测的结果见下图右面的公式： 
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606164911315)
+![img](.\Object Detection.assets\20180606164911315)
 
 因为使用了限制让数值变得参数化，也让网络更容易学习、更稳定。Dimension clusters和Direct location prediction，使 YOLO 比其他使用 Anchor Box 的版本提高了近5％。
 
@@ -606,7 +606,7 @@ Pr(Norfolk\ terrier)=Pr(Norfolk\ terrier|terrier)\\*Pr(terrier|hunting\ dog)\\*.
 $$
 为了验证这一个方法，在 WordTree 上训练 Darknet19 的模型，使用 1000 类的 ImageNet 进行训练，为了建立 WordtTree 1K，把所有中间词汇加入到 WordTree 上，把标签空间从 1000 扩大到了 1369。在训练过程中，如果有一个图片的标签是“Norfolk terrier”，那么这个图片还会获得”狗“（dog）以及“哺乳动物”（mammal）等标签。总之现在一张图片是多标记的，标记之间不需要相互独立。
 
-![img](E:\Markdown\CV_Learning\Object Detection.assets\20180606165111555)
+![img](.\Object Detection.assets\20180606165111555)
 
 如 Figure5 所示，之前的 ImageNet 分类是使用一个大 softmax 进行分类。而现在，WordTree 只需要对同一概念下的同义词进行 softmax 分类。 
 

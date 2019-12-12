@@ -1,7 +1,3 @@
-
-
-
-
 # 目标检测
 
 ## Faster RCNN based

@@ -14,7 +14,6 @@ RCNN（Region with CNN feature），算法可以分为三步：（1）候选区�
 ![img](./Object Detection.assets/rcnn.png)
 
 <center><font size=2>图0 RCNN</font></center>
-
 缺点：
 
 1. 需要事先提取多个候选区域对应的图像
@@ -34,7 +33,6 @@ RCNN（Region with CNN feature），算法可以分为三步：（1）候选区�
 ![img](./Object Detection.assets/fast_rcnn.png)
 
 <center><font size=2>图1 Fast RCNN</font></center>
-
 **划重点：**
 
 R-CNN有一些相当大的缺点，把这些缺点都改掉了，就成了Fast R-CNN。
@@ -74,7 +72,6 @@ R-CNN有一些相当大的缺点，把这些缺点都改掉了，就成了Fast R
 ![Faster RCNN VGG Net](./Object Detection.assets/faster_rcnn_1.jpg) 
 
 <center><font size=2>图2 Faster RCNN VGG16</font></center>
-
 上图2展示了python版本中的VGG16模型中的faster_rcnn_test.pt的网络结构，可以清晰的看到该网络对于一副任意大小PxQ的图像，首先缩放至固定大小MxN，然后将MxN图像送入网络；而Conv layers中包含了13个conv层+13个relu层+4个pooling层；RPN网络首先经过3x3卷积，再分别生成foreground anchors与bounding box regression偏移量，然后计算出proposals；而Roi Pooling层则利用proposals从feature maps中提取proposal feature送入后续全连接和softmax网络作classification（即分类proposal到底是什么object）。
 
 #### 1. Conv layers
@@ -89,7 +86,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![img](./Object Detection.assets/20170315105541757)
 
 <center><font size=2>图3 conv layers</font></center>
-
 类似的是，Conv layers中的pooling层kernel_size=2，stride=2。这样每个经过pooling层的MxN矩阵，都会变为(M/2)*(N/2)大小。综上所述，在整个Conv layers中，conv和relu层不改变输入输出大小，只有pooling层使输出长宽都变为输入的1/2。
 
 那么，**一个MxN大小的矩阵经过Conv layers固定变为(M/16)x(N/16)！**这样Conv layers生成的featuure map中都可以和原图对应起来。
@@ -115,7 +111,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![img](./Object Detection.assets/20170328113414055)
 
 <center><font size=2>图5 RPN网络结构</font></center>
-
 上图5展示了RPN网络的具体结构。可以看到RPN网络实际分为2条线，上面一条通过softmax分类anchors获得foreground和background（检测目标是foreground），下面一条用于计算对于anchors的bounding box regression偏移量，以获得精确的proposal。而最后的Proposal层则负责综合foreground anchors和bounding box regression偏移量获取proposals，同时剔除太小和超出边界的proposals。
 
 其实整个网络到了Proposal Layer这里，就完成了相当于目标定位的功能。
@@ -127,7 +122,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![mg](./Object Detection.assets/20170318112222765-1574996110979)
 
 <center><font size=2>图5 多通道+多卷积核做卷积示意图</font></center>
-
 如图5，输入图像layer m-1有4个通道，同时有2个卷积核w1和w2。对于卷积核w1，先在输入图像4个通道分别作卷积，再将4个通道结果加起来得到w1的卷积输出；卷积核w2类似。所以对于某个卷积层，无论输入图像有多少个通道，输出图像通道数总是等于卷积核数量！
 
 <font color=red>对多通道图像做1x1卷积，其实就是将输入图像于每个通道乘以卷积系数后加在一起，即相当于把原图像中本来各个独立的通道“联通”在了一起。</font>
@@ -153,7 +147,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![img](./Object Detection.assets/20170322103823615)
 
 <center><font size=2>图6 anchors示意图</font></center>
-
 <font color=green>注：关于上面的anchors size，其实是根据检测图像设置的。在python demo中，会把任意大小的输入图像reshape成800x600（即图2中的M=800，N=600）。再回头来看anchors的大小，anchors中长宽1:2中最大为352x704，长宽2:1中最大736x384，基本是cover了800x600的各个尺度和形状。</font>
 
 那么这9个anchors是做什么的呢？借用Faster RCNN论文中的原图，如图7，遍历Conv layers计算获得的feature maps，为每一个点都配备这9种anchors作为初始的检测框。
@@ -163,7 +156,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![img](./Object Detection.assets/20170322103903632)
 
 <center><font size=2>图7 生成初始检测框</font></center>
-
 解释一下上面这张图的数字。
 
 1. 在原文中使用的是ZF model中，其Conv Layers中最后的conv5层num_output=256，对应生成256张特征图，所以相当于feature map每个点都是256-d
@@ -178,7 +170,6 @@ Conv layers包含了conv，pooling，relu三种层。以python版本中的VGG16�
 ![img](./Object Detection.assets/20170319220636315)
 
 <center><font size=2>图8 RPN中判定fg/bg网络结构</font></center>
-
 该1x1卷积的caffe prototxt定义如下：
 
 ```cpp
@@ -218,13 +209,11 @@ layer {
 ![img](./Object Detection.assets/20170321000420426)
 
 <center><font size=2>图9</font></center>
-
 对于窗口一般使用四维向量(x, y, w, h)表示，分别表示窗口的中心点坐标和宽高。对于图 10，<font color=red>红色的框A代表原始的Foreground Anchors</font>，<font color=green>绿色的框G代表目标的GT</font>，我们的目标是寻找一种关系，使得输入原始的anchor A经过映射得到一个跟真实窗口G更接近的回归窗口G'，即：给定anchor A=(Ax, Ay, Aw, Ah)，GT=[Gx, Gy, Gw, Gh]，寻找一种变换**F**：使得**F**(Ax, Ay, Aw, Ah)=(G'x, G'y, G'w, G'h)，其中(G'x, G'y, G'w, G'h)≈(Gx, Gy, Gw, Gh)。
 
 ![img](./Object Detection.assets/20170321221228658)
 
 <center><font size=2>图10</font></center>
-
 那么经过何种变换**F**才能从图10中的anchor A变为G'呢？ 比较简单的思路就是:
 
 - 先做平移
@@ -274,7 +263,6 @@ $$
 ![img](./Object Detection.assets/20170321151019146)
 
 <center><font size=2>图11 RPN中的bbox reg</font></center>
-
 先来看一看上图11中1x1卷积的caffe prototxt定义：
 
 ```cpp
@@ -319,7 +307,6 @@ Proposal Layer有3个输入：fg/bg anchors分类器结果rpn_cls_prob_reshape�
 ![img](./Object Detection.assets/20170323200941596)
 
 <center><font size=2>图12</font></center>
-
 Proposal Layer forward（caffe layer的前传函数）按照以下顺序依次处理：
 
 1. 生成anchors，利用$[d_x(A)，d_y(A)，d_w(A)，d_h(A)]$对所有的anchors做bbox regression回归（这里的anchors生成和训练时完全一致）
@@ -353,7 +340,6 @@ RoI Pooling层则负责收集proposal，并计算出proposal feature maps，送�
 ![img](./Object Detection.assets/20170324215916821)
 
 <center><font size=2>图13 crop与warp破坏图像原有结构信息</font></center>
-
 两种办法的示意图如图13，可以看到无论采取那种办法都不好，要么crop后破坏了图像的完整结构，要么warp破坏了图像原始形状信息。回忆RPN网络生成的proposals的方法：对foreground anchors进行bound box regression，那么这样获得的proposals也是大小形状各不相同，即也存在上述问题。所以Faster RCNN中提出了RoI Pooling解决这个问题（需要说明，RoI Pooling从**SPP**发展而来)
 
 ##### 3.2 RoI Pooling原理
@@ -384,7 +370,6 @@ layer {
 
 
 <center><font size=2>图14 proposal示意图</font></center>
-
 #### 4 Classification
 
 缩进Classification部分利用已经获得的proposal feature maps，通过full connect层与softmax计算每个proposal具体属于那个类别（如人，车，电视等），输出cls_prob概率向量；同时再次利用bounding box regression获得每个proposal的位置偏移量bbox_pred，用于回归更加精确的目标检测框。Classification部分网络结构如图15。
@@ -392,7 +377,6 @@ layer {
 ![img](./Object Detection.assets/20170318151746365)
 
 <center><font size=2>图15 Classification部分网络结构图</font></center>
-
 
 
 从PoI Pooling获取到7x7=49大小的proposal feature maps后，送入后续网络，可以看到做了如下2件事：
@@ -405,7 +389,6 @@ layer {
 ![img](./Object Detection.assets/20170325120647787)
 
 <center><font size=2>图16 全连接层示意图</font></center>
-
 其计算公式如下：
 $$
 (\matrix{x_1 & x_2 & x_3})\left(\matrix{w_{11}&w_{12}\\w_{21}&w_{22}\\w_{31}&w_{32}}\right) + \left(\matrix{b_1&b_2}\right)=\left(\matrix{y_1&y_2}\right)
@@ -624,11 +607,37 @@ YOLO9000 的训练基于 YOLO v2 的构架，但是使用 3 priors 而不是 5 �
 
 ### YOLO V3
 
+YOLOv3 的先验检测（Prior detection）系统将分类器或定位器重新用于执行检测任务。他们将模型应用于图像的多个位置和尺度。而那些评分较高的区域就可以视为检测结果。此外，相对于其它目标检测方法，我们使用了完全不同的方法。我们将一个单神经网络应用于整张图像，该网络将图像划分为不同的区域，因而预测每一块区域的边界框和概率，这些边界框会通过预测的概率加权。我们的模型相比于基于分类器的系统有一些优势。它在测试时会查看整个图像，所以它的预测利用了图像中的全局信息。与需要数千张单一目标图像的 R-CNN 不同，它通过单一网络评估进行预测。这令 YOLOv3 非常快，一般它比 R-CNN 快 1000 倍、比 Fast R-CNN 快 100 倍。
+
+**改进之处：**
+
+1.多尺度预测 （类FPN）
+
+2.更好的基础分类网络（类ResNet）和分类器 darknet-53，见下图
+
+3.分类器-类别预测：
+
+YOLOv3 不使用 Softmax 对每个框进行分类，主要考虑因素有：
+
+1. Softmax 使得每个框分配一个类别（得分最高的一个），而对于 Open Images这种数据集，目标可能有重叠的类别标签，因此 Softmax不适用于多标签分类。
+2. Softmax 可被独立的多个 logistic 分类器替代，且准确率不会下降。 
+3. 分类损失采用 binary cross-entropy loss.
 
 
 
+**多尺度预测**
+
+每种尺度预测 3 个 box, anchor 的设计方式仍然使用聚类，得到9个聚类中心，将其按照大小均分给 3 个尺度。
+
+- 尺度1: 在基础网络之后添加一些卷积层再输出box信息。
+- 尺度2: 从尺度1中的倒数第二层的卷积层上采样(x2)再与最后一个 16x16 大小的特征图相加，再次通过多个卷积后输出 box 信息，相比尺度1变大两倍.
+- 尺度3: 与尺度2类似，使用了 32x32 大小的特征图
 
 
+
+**基础网络 Darknet-53**
+
+![img](Object Detection.assets/20180606165319368.png)
 
 
 
